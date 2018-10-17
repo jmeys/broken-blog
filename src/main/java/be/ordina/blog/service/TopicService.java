@@ -41,13 +41,13 @@ public class TopicService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_admin')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteTopicById(long id) {
         topicRepository.deleteById(id);
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_user')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public void addPostForTopic(Post post, long topicId) {
         post.setCreationTime(now());
         Topic topic = topicRepository.findById(topicId).get();
@@ -61,7 +61,7 @@ public class TopicService {
     }
 
     @Transactional
-    @PreAuthorize("#topic.getAuthor().equals(principal.name) OR hasRole('ROLE_admin')")
+    @PreAuthorize("#topic.getAuthor().equals(principal.name) OR hasRole('ROLE_ADMIN')")
     public void updateTopic(Topic topic) {
         Topic persistedTopic = topicRepository.findById(topic.getId()).get();
         persistedTopic.setTitle(topic.getTitle());
@@ -76,7 +76,7 @@ public class TopicService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_admin')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void removePostForTopic(long postId, long topicId) {
         Topic topic = topicRepository.getOne(topicId);
         Post postToRemove = topic.getPosts().stream().filter(p->p.getId() == postId).findFirst().get();
@@ -85,7 +85,7 @@ public class TopicService {
     }
 
     @Transactional
-    @PreAuthorize("#post.getAuthor().equals(principal.name) OR hasRole('ROLE_moderator')")
+    @PreAuthorize("#post.getAuthor().equals(principal.name) OR hasRole('ROLE_MODERATOR')")
     public void updatePostForTopic(Post post, long topicId) {
         Topic topic = topicRepository.getOne(topicId);
         Post postToModify = topic.getPosts().stream().filter(p->p.getId() == post.getId()).findFirst().get();

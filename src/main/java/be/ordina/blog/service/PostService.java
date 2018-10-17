@@ -41,7 +41,7 @@ public class PostService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_user')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public void addCommentToPost(Comment comment, Long id) {
         comment.setCreationTime(now());
         Post parentPost = postRepository.findById(id).get();
@@ -51,7 +51,7 @@ public class PostService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_moderator')")
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
     public void deletePostById(long postId) {
         List<Topic> allTopics = topicRepository.findAll();
         // Terrible performance. It' the worst performance. Huuuuge performance loss. Like you wouldn't believe
@@ -63,7 +63,7 @@ public class PostService {
     }
 
     @Transactional
-    @PreAuthorize("#comment.getAuthor().equals(principal.name) OR hasRole('ROLE_moderator')")
+    @PreAuthorize("#comment.getAuthor().equals(principal.name) OR hasRole('ROLE_MODERATOR')")
     public void updateCommentForPost(Comment comment, long postId) {
         Post post = postRepository.getOne(postId);
         Comment commentToModify = post.getComments().stream().filter(c->c.getId() == comment.getId()).findFirst().get();
@@ -77,7 +77,7 @@ public class PostService {
     }
 
     @Transactional
-    @PreAuthorize("#post.getAuthor().equals(principal.name) OR hasRole('ROLE_moderator')")
+    @PreAuthorize("#post.getAuthor().equals(principal.name) OR hasRole('ROLE_MODERATOR')")
     public void updatePost(Post post) {
         Post postToModify = postRepository.getOne(post.getId());
         if(!StringUtils.isEmpty(post.getTitle())) {
@@ -93,7 +93,7 @@ public class PostService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_admin')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteCommentForPost(long commentId, long postId) {
         Post post = postRepository.getOne(postId);
         Comment comment = post.getComments().stream().filter(c->c.getId() == commentId).findFirst().get();
@@ -105,10 +105,5 @@ public class PostService {
     public Comment getCommentForPost(long commentId, long postId) {
         Post post = postRepository.getOne(postId);
         return post.getComments().stream().filter(c->c.getId() == commentId).findFirst().get();
-    }
-
-    @SuppressWarnings("unused")
-    public boolean sameUser(Principal principal , Ownable ownable){
-        return principal.getName().equals(ownable.getAuthor());
     }
 }
